@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>우리 가족에게 전하는 깜짝 소식</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Jua&family=Gowun+Dodum&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --cream:#fff8f0;
+    --ink:#3a2c24;
+    --dim:#7a675c;
+    --coral:#ef6a52;
+    --coral-deep:#d24c38;
+    --amber:#f4a259;
+    --teal:#2f9c95;
+    --teal-deep:#23807a;
+    --gold:#e0a23a;
+    --sage:#7fa982;
+    --pink:#e8889a;
+    --soft:#ffe6d4;
+  }
+  *{ box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  html,body{ height:100%; margin:0; }
+  body{
+    font-family:"Gowun Dodum",sans-serif; color:var(--ink);
+    background:
+      radial-gradient(circle at 18% 12%, #ffe0b8 0%, transparent 45%),
+      radial-gradient(circle at 85% 18%, #bfe9d8 0%, transparent 45%),
+      radial-gradient(circle at 80% 88%, #ffd2c0 0%, transparent 50%),
+      linear-gradient(165deg, #fff1de 0%, #ffe3d2 50%, #ffd8c4 100%);
+    min-height:100dvh; display:flex; align-items:center; justify-content:center;
+    padding:30px 18px; overflow-x:hidden;
+  }
+  body::before{
+    content:""; position:fixed; inset:0; pointer-events:none;
+    background-image:radial-gradient(rgba(255,255,255,.45) 1px,transparent 1px);
+    background-size:22px 22px; opacity:.5;
+  }
+
+  .wrap{ width:100%; max-width:440px; position:relative; z-index:1; }
+
+  /* ===== 헤더 ===== */
+  .header{ text-align:center; margin-bottom:24px; animation:drop .6s cubic-bezier(.2,.85,.25,1) both; }
+  .badge{
+    display:inline-block; font-family:"Jua",sans-serif; color:#fff;
+    background:linear-gradient(180deg,var(--coral),var(--coral-deep));
+    padding:7px 20px; border-radius:999px; font-size:13px; letter-spacing:1px;
+    box-shadow:0 4px 0 rgba(150,40,20,.25); margin-bottom:16px;
+  }
+  .title{
+    font-family:"Black Han Sans",sans-serif; font-size:34px; line-height:1.18;
+    color:var(--coral-deep); text-shadow:0 2px 0 #fff;
+  }
+  .title .em{ color:var(--teal); }
+  .lead{ margin:14px 8px 0; color:var(--dim); line-height:1.7; font-size:15px; }
+
+  /* ===== 카드 그리드 ===== */
+  .grid{ display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-top:8px; }
+  @media (max-width:380px){ .grid{ grid-template-columns:1fr; } }
+
+  .card{
+    --c:var(--coral); --c2:var(--coral-deep);
+    position:relative; display:flex; flex-direction:column; gap:6px;
+    background:#fffdfa; border:2px solid #ffeede; border-radius:22px;
+    padding:20px 16px 18px; text-decoration:none; color:inherit;
+    box-shadow:0 14px 30px -16px rgba(150,60,30,.4);
+    transition:transform .14s ease, box-shadow .18s ease, border-color .18s ease;
+    animation:drop .6s cubic-bezier(.2,.85,.25,1) both;
+    overflow:hidden;
+  }
+  .card::before{
+    content:""; position:absolute; top:0; left:0; right:0; height:5px;
+    background:linear-gradient(90deg,var(--c),var(--c2));
+  }
+  .card:hover{ transform:translateY(-4px); box-shadow:0 22px 40px -18px rgba(150,60,30,.5); border-color:var(--c); }
+  .card:active{ transform:translateY(-1px) scale(.99); }
+
+  .card .ico{
+    width:54px; height:54px; border-radius:16px; display:flex; align-items:center; justify-content:center;
+    font-size:28px; background:linear-gradient(160deg,#fff,#fff2e6);
+    border:1.5px solid #ffeede; box-shadow:0 4px 10px rgba(0,0,0,.05); margin-bottom:4px;
+  }
+  .card .num{
+    position:absolute; top:14px; right:16px; font-family:"Jua",sans-serif;
+    font-size:13px; color:var(--c); opacity:.65;
+  }
+  .card .name{ font-family:"Jua",sans-serif; font-size:18px; color:var(--ink); }
+  .card .desc{ font-size:12.5px; color:var(--dim); line-height:1.55; }
+  .card .go{
+    margin-top:8px; align-self:flex-start; font-family:"Jua",sans-serif; font-size:12px;
+    color:#fff; background:linear-gradient(180deg,var(--c),var(--c2));
+    padding:5px 14px; border-radius:999px; box-shadow:0 3px 0 rgba(0,0,0,.1);
+  }
+
+  /* 카드별 색상 */
+  .card.scratch{ --c:#d14b4f; --c2:#9e2528; }
+  .card.envelope{ --c:#7fa982; --c2:#5a7860; }
+  .card.update{  --c:#4ea0ff; --c2:#2f73c4; }
+  .card.quiz{    --c:#f4a259; --c2:#d24c38; }
+
+  /* 등장 딜레이 */
+  .card:nth-child(1){ animation-delay:.05s; }
+  .card:nth-child(2){ animation-delay:.13s; }
+  .card:nth-child(3){ animation-delay:.21s; }
+  .card:nth-child(4){ animation-delay:.29s; }
+
+  @keyframes drop{ from{ opacity:0; transform:translateY(22px) } to{ opacity:1; transform:none } }
+
+  .footer{ text-align:center; margin-top:26px; color:var(--dim); font-size:12.5px; line-height:1.7; }
+  .footer .heart{ color:var(--coral); }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="header">
+      <span class="badge">🍼 우리 가족 깜짝 소식 🍼</span>
+      <div class="title">엄마, 아빠께<br><span class="em">전하고 싶은 소식</span>이 있어요</div>
+      <p class="lead">아래 네 가지 방법 중<br>마음에 드는 걸 하나 골라서 눌러 보세요 😊</p>
+    </div>
+
+    <div class="grid">
+      <a class="card scratch" href="imming-out.html">
+        <span class="num">01</span>
+        <div class="ico">🎰</div>
+        <div class="name">행운의 복권</div>
+        <div class="desc">은박을 손가락으로 긁으면 당첨 결과가 짠!</div>
+        <span class="go">긁어보기 ▶</span>
+      </a>
+
+      <a class="card envelope" href="dday-envelope.html">
+        <span class="num">02</span>
+        <div class="ico">💌</div>
+        <div class="name">D-day 봉투</div>
+        <div class="desc">봉투를 탭하면 열리며 카운트다운이 떠요.</div>
+        <span class="go">열어보기 ▶</span>
+      </a>
+
+      <a class="card update" href="family-update.html">
+        <span class="num">03</span>
+        <div class="ico">🔔</div>
+        <div class="name">가족 업데이트</div>
+        <div class="desc">‘구성원 +1 설치 중...’ 로딩이 끝나면 공개!</div>
+        <span class="go">설치하기 ▶</span>
+      </a>
+
+      <a class="card quiz" href="family-quiz.html">
+        <span class="num">04</span>
+        <div class="ico">❓</div>
+        <div class="name">깜짝 가족 퀴즈</div>
+        <div class="desc">퀴즈를 풀다 보면 마지막에 소식이 등장!</div>
+        <span class="go">풀어보기 ▶</span>
+      </a>
+    </div>
+
+    <div class="footer">
+      어떤 걸 골라도 같은 소식이 기다리고 있어요 <span class="heart">♥</span><br>
+      천천히, 즐겁게 확인해 주세요 :)
+    </div>
+  </div>
+</body>
+</html>

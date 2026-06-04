@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>우리 가족 깜짝 퀴즈</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Jua&family=Black+Han+Sans&family=Gowun+Dodum&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --cream:#fff7ee;
+    --ink:#3a2c24;
+    --coral:#ef6a52;
+    --coral-deep:#d24c38;
+    --amber:#f4a259;
+    --teal:#2f9c95;
+    --soft:#ffe2cf;
+  }
+  *{ box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  html,body{ height:100%; margin:0; }
+  body{
+    font-family:"Gowun Dodum",sans-serif; color:var(--ink);
+    background:linear-gradient(165deg,#ffb27a 0%, #f4795a 45%, #e2604e 100%);
+    min-height:100dvh; display:flex; align-items:center; justify-content:center;
+    padding:22px 16px; overflow-x:hidden;
+  }
+  body::before{
+    content:""; position:fixed; inset:0; pointer-events:none;
+    background-image:radial-gradient(rgba(255,255,255,.10) 1px,transparent 1px);
+    background-size:20px 20px;
+  }
+
+  .card{
+    position:relative; width:100%; max-width:380px; background:var(--cream);
+    border-radius:26px; padding:26px 22px 24px; min-height:470px;
+    box-shadow:0 26px 55px -20px rgba(120,30,10,.6);
+    display:flex; flex-direction:column;
+    animation:pop .55s cubic-bezier(.2,.85,.25,1) both;
+  }
+  @keyframes pop{ from{ transform:translateY(24px) scale(.95); opacity:0 } to{ transform:none; opacity:1 } }
+
+  /* 진행 바 */
+  .bar{ height:8px; border-radius:99px; background:var(--soft); overflow:hidden; margin-bottom:20px; }
+  .bar > i{ display:block; height:100%; width:0; border-radius:99px;
+    background:linear-gradient(90deg,var(--amber),var(--coral)); transition:width .4s ease; }
+
+  .screen{ flex:1; display:flex; flex-direction:column; }
+  .hidden{ display:none !important; }
+
+  /* 인트로 */
+  .badge{ align-self:center; font-family:"Jua",sans-serif; color:#fff;
+    background:var(--coral); padding:7px 18px; border-radius:99px; font-size:13px; letter-spacing:1px;
+    box-shadow:0 4px 0 var(--coral-deep); margin-bottom:18px; }
+  .title{ font-family:"Black Han Sans",sans-serif; font-size:38px; line-height:1.1; text-align:center; color:var(--coral-deep); }
+  .title .em{ color:var(--teal); }
+  .lead{ text-align:center; color:#7a675c; margin:14px 4px 0; line-height:1.65; font-size:15px; }
+  .grow{ flex:1; }
+
+  .qnum{ font-family:"Jua",sans-serif; color:var(--coral); font-size:14px; margin-bottom:8px; }
+  .qtext{ font-family:"Jua",sans-serif; font-size:23px; line-height:1.4; color:var(--ink); margin-bottom:20px; }
+
+  .opts{ display:flex; flex-direction:column; gap:11px; }
+  .opt{
+    font-family:"Gowun Dodum",sans-serif; font-size:17px; text-align:left;
+    background:#fff; color:var(--ink); border:2px solid var(--soft); border-radius:15px;
+    padding:15px 17px; cursor:pointer; transition:transform .1s, border-color .15s, background .15s;
+    display:flex; align-items:center; gap:10px;
+  }
+  .opt:active{ transform:scale(.98); }
+  .opt .key{ font-family:"Jua",sans-serif; color:var(--coral); }
+  .opt.correct{ background:#e8f6ee; border-color:var(--teal); }
+  .opt.wrong{ background:#fdecea; border-color:var(--coral-deep); }
+  .opt.correct .key{ color:var(--teal); }
+  .opt:disabled{ cursor:default; }
+
+  .next{
+    margin-top:auto; font-family:"Jua",sans-serif; font-size:18px; color:#fff;
+    background:linear-gradient(180deg,var(--coral),var(--coral-deep));
+    border:none; border-radius:16px; padding:15px; cursor:pointer;
+    box-shadow:0 5px 0 rgba(150,40,20,.35); transition:transform .1s;
+  }
+  .next:active{ transform:translateY(2px); box-shadow:0 3px 0 rgba(150,40,20,.35); }
+  .next.hidden{ display:none; }
+
+  /* 결과 */
+  .reveal{ text-align:center; align-items:center; justify-content:center; }
+  .spark{ font-size:30px; margin-bottom:6px; }
+  .rev-big{ font-family:"Black Han Sans",sans-serif; font-size:30px; line-height:1.25; color:var(--coral-deep); }
+  .rev-big .hl{ color:var(--teal); }
+  .rev-sub{ margin-top:14px; color:#7a675c; line-height:1.7; font-size:15px; }
+  .dday{ margin-top:16px; font-family:"Jua",sans-serif; font-size:16px; color:#fff;
+    background:linear-gradient(180deg,var(--teal),#23807a); padding:7px 20px; border-radius:99px;
+    box-shadow:0 4px 0 rgba(20,80,75,.3); }
+  .sign{ margin-top:16px; font-size:13px; color:#a08a7c; }
+  .score{ margin-top:6px; font-size:12px; color:#bda899; }
+
+  .ghost{ margin-top:18px; font-family:"Jua",sans-serif; font-size:14px; color:var(--coral-deep);
+    background:transparent; border:1.5px solid var(--soft); border-radius:99px; padding:9px 20px; cursor:pointer; }
+
+  #confetti{ position:fixed; inset:0; pointer-events:none; z-index:50; }
+
+  .home{
+    position:fixed; top:14px; left:14px; z-index:60; text-decoration:none;
+    font-family:"Jua",sans-serif; font-size:13px; color:#fff;
+    background:rgba(255,255,255,.22); border:1px solid rgba(255,255,255,.5);
+    padding:7px 14px; border-radius:999px; backdrop-filter:blur(4px);
+  }
+  .home:active{ transform:translateY(1px); }
+</style>
+</head>
+<body>
+<canvas id="confetti"></canvas>
+<a class="home" href="index.html">← 처음으로</a>
+
+<div class="card">
+  <div class="bar"><i id="barFill"></i></div>
+
+  <!-- 인트로 -->
+  <div class="screen" id="introScreen">
+    <span class="badge">🎈 가족 미션 🎈</span>
+    <div class="title">우리 가족<br><span class="em">깜짝 퀴즈</span></div>
+    <p class="lead">엄마, 아빠!<br>우리 가족에 대해 얼마나 알고 계신가요?<br>마지막 문제까지 풀어 주세요 😉</p>
+    <div class="grow"></div>
+    <button class="next" id="startBtn">퀴즈 시작하기 ▶</button>
+  </div>
+
+  <!-- 문제 -->
+  <div class="screen hidden" id="quizScreen">
+    <div class="qnum" id="qnum"></div>
+    <div class="qtext" id="qtext"></div>
+    <div class="opts" id="opts"></div>
+    <button class="next hidden" id="nextBtn">다음 ▶</button>
+  </div>
+
+  <!-- 결과 -->
+  <div class="screen reveal hidden" id="revealScreen">
+    <div class="spark">🎉 ✨ 🎉</div>
+    <div class="rev-big" id="revBig"></div>
+    <div class="rev-sub" id="revSub"></div>
+    <div class="dday hidden" id="dday"></div>
+    <div class="sign" id="sign"></div>
+    <div class="score" id="score"></div>
+    <button class="ghost" id="againBtn">↺ 다시 풀기</button>
+  </div>
+</div>
+
+<script>
+/* ============================================================
+   ✏️  이 부분만 바꾸세요
+   ============================================================ */
+const CONFIG = {
+  // 일반 문제들 — answer 는 정답 보기의 순번(0부터 시작)
+  questions: [
+    { q:"이 깜짝 퀴즈를 만든 사람은 누구일까요?",
+      options:["엄마","아빠","딸","사위"], answer:2 },
+
+    { q:"지금 우리 가족은 모두 몇 명일까요?",
+      options:["4명","5명","6명","7명"], answer:2 },   // 엄마·아빠·딸·사위·남동생2 = 6명
+
+    { q:"곧 우리 가족에게 아주 특별한 일이 생겨요. 무슨 일일까요?",
+      options:["이사","해외여행","새 식구","집 리모델링"], answer:2 },
+  ],
+
+  // 마지막 '공개' 문제 — 어떤 보기를 눌러도 결과로 넘어갑니다
+  revealQuestion: {
+    q:"그렇다면… 내년에 새로 늘어날 가족은? 🥁",
+    options:["강아지 🐶","고양이 🐱","손주 👶","로봇 🤖"], answer:2
+  },
+
+  // 결과 화면
+  revealBig:  '엄마, 아빠가 곧<br><span class="hl">할머니 · 할아버지</span>가 됩니다 👶',
+  revealSub:  '내년에 손주가 찾아와요.<br>건강하게 잘 준비할게요 ☺️',
+  dueDate:    "2027-02-01",             // 예: "2026-12-20" (비우면 D-day 안 나옴)
+  ddayLabel:  "출산 예정일까지",
+  sign:       "사랑하는 딸 · 사위 올림",
+};
+/* ============================================================ */
+
+const $ = s => document.querySelector(s);
+const all = CONFIG.questions.concat([CONFIG.revealQuestion]);
+let idx = 0, score = 0, locked = false;
+
+const bar = $('#barFill');
+function setBar(){ bar.style.width = (idx/(all.length)*100) + '%'; }
+
+$('#startBtn').onclick = () => { $('#introScreen').classList.add('hidden'); $('#quizScreen').classList.remove('hidden'); render(); };
+$('#againBtn').onclick = () => { idx=0; score=0; locked=false; $('#revealScreen').classList.add('hidden'); $('#introScreen').classList.remove('hidden'); setBar(); };
+$('#nextBtn').onclick = () => { idx++; if(idx < all.length) render(); else showReveal(); };
+
+function render(){
+  locked = false; setBar();
+  const item = all[idx];
+  const isReveal = (idx === all.length - 1);
+  $('#qnum').textContent = isReveal ? '마지막 문제 🎁' : `${idx+1}번 문제 / 총 ${all.length}문제`;
+  $('#qtext').innerHTML = item.q;
+  $('#nextBtn').classList.add('hidden');
+  const box = $('#opts'); box.innerHTML = '';
+  const keys = ['A','B','C','D','E'];
+  item.options.forEach((txt,i)=>{
+    const b = document.createElement('button');
+    b.className = 'opt';
+    b.innerHTML = `<span class="key">${keys[i]}</span><span>${txt}</span>`;
+    b.onclick = () => choose(i, item, isReveal, b);
+    box.appendChild(b);
+  });
+}
+
+function choose(i, item, isReveal, btn){
+  if(locked) return; locked = true;
+  const buttons = [...document.querySelectorAll('.opt')];
+  buttons.forEach(b=>b.disabled = true);
+  if(isReveal){ setTimeout(showReveal, 380); buttons[item.answer].classList.add('correct'); return; }
+  if(i === item.answer){ score++; btn.classList.add('correct'); }
+  else { btn.classList.add('wrong'); buttons[item.answer].classList.add('correct'); }
+  $('#nextBtn').classList.remove('hidden');
+}
+
+function showReveal(){
+  $('#quizScreen').classList.add('hidden');
+  $('#revealScreen').classList.remove('hidden');
+  bar.style.width = '100%';
+  $('#revBig').innerHTML = CONFIG.revealBig;
+  $('#revSub').innerHTML = CONFIG.revealSub;
+  $('#sign').textContent = CONFIG.sign;
+  $('#score').textContent = `가족 퀴즈 점수 : ${score} / ${CONFIG.questions.length}점`;
+  // D-day
+  if(CONFIG.dueDate){
+    const due = new Date(CONFIG.dueDate+"T00:00:00");
+    if(!isNaN(due)){
+      const t = new Date(); t.setHours(0,0,0,0);
+      const d = Math.round((due - t)/86400000);
+      const el = $('#dday'); el.classList.remove('hidden');
+      el.textContent = d>0 ? `${CONFIG.ddayLabel} D-${d}` : d===0 ? '오늘이 예정일이에요!' : `예정일에서 +${-d}일`;
+    }
+  }
+  burst();
+}
+
+/* ---------- 꽃가루 ---------- */
+const cc = $('#confetti'), cx = cc.getContext('2d');
+let parts=[], raf=null;
+function sizeC(){ cc.width=innerWidth; cc.height=innerHeight; }
+sizeC(); addEventListener('resize', sizeC);
+function burst(){
+  const colors=['#ef6a52','#f4a259','#2f9c95','#fff','#d24c38','#ffd6a0'];
+  parts=[];
+  for(let i=0;i<170;i++){
+    parts.push({ x:innerWidth/2+(Math.random()-.5)*140, y:innerHeight*0.34,
+      vx:(Math.random()-.5)*11, vy:Math.random()*-13-4, g:0.32+Math.random()*0.15,
+      s:6+Math.random()*7, rot:Math.random()*6.28, vr:(Math.random()-.5)*0.4,
+      c:colors[(Math.random()*colors.length)|0] });
+  }
+  if(!raf) tick();
+}
+function tick(){
+  cx.clearRect(0,0,cc.width,cc.height); let alive=false;
+  for(const p of parts){ p.vy+=p.g; p.x+=p.vx; p.y+=p.vy; p.rot+=p.vr;
+    if(p.y<cc.height+30) alive=true;
+    cx.save(); cx.translate(p.x,p.y); cx.rotate(p.rot);
+    cx.fillStyle=p.c; cx.fillRect(-p.s/2,-p.s/2,p.s,p.s*0.6); cx.restore(); }
+  if(alive) raf=requestAnimationFrame(tick); else { cx.clearRect(0,0,cc.width,cc.height); raf=null; }
+}
+
+setBar();
+</script>
+</body>
+</html>

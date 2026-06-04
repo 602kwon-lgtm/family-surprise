@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>행운의 즉석복권</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Gowun+Dodum&family=Jua&display=swap" rel="stylesheet">
+<style>
+  /* ============================================================
+     ⬇️ 여기 CONFIG 값만 바꾸면 됩니다 (아래 <script> 안)
+     ============================================================ */
+
+  :root{
+    --paper: #fdf6e9;
+    --paper-edge: #f3e6cb;
+    --ink: #2a2118;
+    --red: #c4373b;
+    --red-deep: #9e2528;
+    --gold: #c8a24c;
+    --gold-soft: #e3c884;
+    --foil-1: #b9bcc2;
+    --foil-2: #d7dade;
+    --foil-3: #9aa0a8;
+  }
+
+  *{ box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  html,body{ height:100%; margin:0; }
+  body{
+    font-family:"Gowun Dodum", sans-serif;
+    color:var(--ink);
+    background:
+      radial-gradient(circle at 20% 15%, #b13c3f 0%, transparent 45%),
+      radial-gradient(circle at 85% 80%, #8e2326 0%, transparent 50%),
+      linear-gradient(160deg, #a83033 0%, #7e1f22 100%);
+    min-height:100dvh;
+    display:flex; align-items:center; justify-content:center;
+    padding:24px 18px;
+    overflow-x:hidden;
+    position:relative;
+  }
+  /* 은은한 점 무늬 */
+  body::before{
+    content:""; position:fixed; inset:0; pointer-events:none;
+    background-image:radial-gradient(rgba(255,255,255,.06) 1px, transparent 1px);
+    background-size:18px 18px; opacity:.6;
+  }
+
+  .ticket{
+    position:relative; width:100%; max-width:360px;
+    background:var(--paper);
+    border-radius:18px;
+    padding:18px 18px 22px;
+    box-shadow:0 24px 50px -18px rgba(0,0,0,.55), 0 2px 0 rgba(255,255,255,.6) inset;
+    border:2px solid var(--gold-soft);
+    animation:drop .7s cubic-bezier(.2,.8,.2,1) both;
+  }
+  @keyframes drop{ from{ transform:translateY(28px) scale(.96); opacity:0 } to{ transform:none; opacity:1 } }
+
+  /* 천공(구멍) 장식 */
+  .ticket::before, .ticket::after{
+    content:""; position:absolute; top:0; bottom:0; width:14px;
+    background:radial-gradient(circle at center, var(--paper-edge) 4px, transparent 5px);
+    background-size:14px 18px; background-repeat:repeat-y;
+  }
+  .ticket::before{ left:46px; } .ticket::after{ right:46px; }
+
+  .head{ text-align:center; position:relative; }
+  .ribbon{
+    display:inline-block; font-family:"Jua",sans-serif;
+    color:#fff; background:linear-gradient(180deg,var(--red),var(--red-deep));
+    padding:6px 18px; border-radius:999px; font-size:13px; letter-spacing:1px;
+    box-shadow:0 4px 0 rgba(0,0,0,.12); margin-bottom:10px;
+  }
+  .brand{
+    font-family:"Black Han Sans", sans-serif;
+    font-size:30px; line-height:1.05; color:var(--red-deep);
+    text-shadow:0 1px 0 var(--gold-soft);
+  }
+  .brand small{ display:block; font-family:"Jua",sans-serif; font-size:12px; color:var(--gold); letter-spacing:3px; margin-top:4px; }
+
+  .serial{
+    margin:10px 0 4px; text-align:center; font-size:11px; letter-spacing:2px;
+    color:#a89878; border-top:1px dashed var(--gold-soft); border-bottom:1px dashed var(--gold-soft);
+    padding:6px 0;
+  }
+
+  .stage{ position:relative; margin:14px 0 4px; }
+
+  /* 당첨 결과 (긁으면 드러남) */
+  .prize{
+    position:relative; border-radius:14px; overflow:hidden;
+    background:
+      radial-gradient(circle at 50% 0%, #fff6df 0%, transparent 60%),
+      linear-gradient(160deg,#fffdf7,#fbeecb);
+    border:2px solid var(--gold-soft);
+    min-height:230px;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    text-align:center; padding:22px 16px; gap:8px;
+  }
+  .spark{ font-size:26px; }
+  .win{
+    font-family:"Black Han Sans",sans-serif; font-size:46px; line-height:1;
+    color:var(--red); text-shadow:0 2px 0 var(--gold-soft); letter-spacing:1px;
+  }
+  .role{ font-family:"Jua",sans-serif; font-size:21px; color:var(--ink); }
+  .submsg{ font-size:14px; color:#6f6452; line-height:1.6; }
+  .dday{
+    margin-top:6px; font-family:"Jua",sans-serif; font-size:15px; color:#fff;
+    background:linear-gradient(180deg,var(--gold),#b3893a);
+    padding:5px 16px; border-radius:999px; box-shadow:0 3px 0 rgba(0,0,0,.12);
+  }
+  .sign{ margin-top:8px; font-size:12px; color:#a89878; }
+
+  /* 긁는 코팅 레이어 */
+  .scratch{
+    position:absolute; inset:0; width:100%; height:100%;
+    border-radius:14px; cursor:grab; touch-action:none;
+    transition:opacity .6s ease;
+  }
+  .scratch.cleared{ opacity:0; pointer-events:none; }
+
+  .hint{
+    position:absolute; left:0; right:0; bottom:14px; text-align:center;
+    font-family:"Jua",sans-serif; color:#5c5048; font-size:13px;
+    pointer-events:none; animation:pulse 1.6s ease-in-out infinite;
+  }
+  .hint.gone{ display:none; }
+  @keyframes pulse{ 0%,100%{ opacity:.55; transform:translateY(0) } 50%{ opacity:1; transform:translateY(-3px) } }
+
+  .foot{ text-align:center; margin-top:14px; }
+  .reset{
+    font-family:"Jua",sans-serif; font-size:13px; color:var(--red-deep);
+    background:#fff; border:1.5px solid var(--gold-soft); border-radius:999px;
+    padding:8px 18px; cursor:pointer; box-shadow:0 3px 0 rgba(0,0,0,.06);
+  }
+  .reset:active{ transform:translateY(1px); }
+
+  #confetti{ position:fixed; inset:0; pointer-events:none; z-index:50; }
+
+  .home{
+    position:fixed; top:14px; left:14px; z-index:60; text-decoration:none;
+    font-family:"Jua",sans-serif; font-size:13px; color:#fff;
+    background:rgba(0,0,0,.22); border:1px solid rgba(255,255,255,.35);
+    padding:7px 14px; border-radius:999px; backdrop-filter:blur(4px);
+  }
+  .home:active{ transform:translateY(1px); }
+</style>
+</head>
+<body>
+  <canvas id="confetti"></canvas>
+  <a class="home" href="index.html">← 처음으로</a>
+
+  <div class="ticket">
+    <div class="head">
+      <span class="ribbon">★ 행운의 즉석복권 ★</span>
+      <div class="brand">GOOD&nbsp;NEWS<small>대박 예감 복권</small></div>
+    </div>
+    <div class="serial" id="serial">NO. 0000-0000-0000</div>
+
+    <div class="stage">
+      <div class="prize">
+        <div class="spark">🎉 ✨ 🎉</div>
+        <div class="win" id="winText">당첨!</div>
+        <div class="role" id="roleText">예비 할머니 · 할아버지</div>
+        <div class="submsg" id="subText"></div>
+        <div class="dday" id="ddayText" style="display:none"></div>
+        <div class="sign" id="signText"></div>
+      </div>
+      <canvas class="scratch" id="scratch"></canvas>
+      <div class="hint" id="hint">👆 동전으로 긁어 보세요</div>
+    </div>
+
+    <div class="foot">
+      <button class="reset" id="reset">↺ 다시 긁기</button>
+    </div>
+  </div>
+
+<script>
+/* ============================================================
+   ✏️  이 부분만 바꾸세요
+   ============================================================ */
+const CONFIG = {
+  role:     "예비 할머니 · 할아버지",      // 친가면 그대로 / 외가면 "예비 외할머니 · 외할아버지"
+  win:      "당첨!",
+  subMsg:   "우리 가족이<br>한 명 더 늘어납니다 👶",
+  dueDate:  "2027-02-01",                // 예: "2026-12-20"  (비워두면 D-day 안 보임)
+  ddayLabel:"출산 예정일까지",            // D-day 앞에 붙는 말
+  sign:     "사랑하는 아들 · 며느리 올림", // 보내는 사람
+  hint:     "👆 동전으로 긁어 보세요",
+};
+/* ============================================================ */
+
+// 텍스트 적용
+document.getElementById('winText').textContent  = CONFIG.win;
+document.getElementById('roleText').textContent = CONFIG.role;
+document.getElementById('subText').innerHTML     = CONFIG.subMsg;
+document.getElementById('signText').textContent  = CONFIG.sign;
+document.getElementById('hint').textContent       = CONFIG.hint;
+
+// 랜덤 일련번호 (재미 요소)
+const rnd = n => Math.floor(Math.random()*10**n).toString().padStart(n,'0');
+document.getElementById('serial').textContent = `NO. ${rnd(4)}-${rnd(4)}-${rnd(4)}`;
+
+// D-day 계산
+(function(){
+  if(!CONFIG.dueDate) return;
+  const due = new Date(CONFIG.dueDate + "T00:00:00");
+  if(isNaN(due)) return;
+  const today = new Date(); today.setHours(0,0,0,0);
+  const diff = Math.round((due - today)/86400000);
+  const el = document.getElementById('ddayText');
+  el.style.display = 'inline-block';
+  el.textContent = diff > 0 ? `${CONFIG.ddayLabel} D-${diff}`
+                 : diff === 0 ? '오늘이 예정일이에요!'
+                 : `예정일에서 +${-diff}일`;
+})();
+
+/* ---------- 스크래치 로직 ---------- */
+const canvas = document.getElementById('scratch');
+const ctx = canvas.getContext('2d');
+const hint = document.getElementById('hint');
+let dpr = Math.max(1, Math.min(window.devicePixelRatio || 1, 3));
+let cleared = false, drawing = false;
+
+function paintFoil(){
+  const r = canvas.getBoundingClientRect();
+  canvas.width  = Math.round(r.width  * dpr);
+  canvas.height = Math.round(r.height * dpr);
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+  // 은박 코팅
+  const g = ctx.createLinearGradient(0,0,r.width,r.height);
+  g.addColorStop(0,'#c2c6cc'); g.addColorStop(.45,'#e2e5e9');
+  g.addColorStop(.55,'#aeb3ba'); g.addColorStop(1,'#cfd3d8');
+  ctx.globalCompositeOperation = 'source-over';
+  ctx.fillStyle = g; ctx.fillRect(0,0,r.width,r.height);
+  // 결 무늬
+  ctx.strokeStyle = 'rgba(255,255,255,.25)'; ctx.lineWidth = 1;
+  for(let i=-r.height;i<r.width;i+=7){ ctx.beginPath(); ctx.moveTo(i,0); ctx.lineTo(i+r.height,r.height); ctx.stroke(); }
+  // 안내 문구
+  ctx.fillStyle = 'rgba(60,55,50,.55)';
+  ctx.font = '600 17px Jua, sans-serif';
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  ctx.fillText('🪙  S C R A T C H', r.width/2, r.height/2 - 8);
+  ctx.font = '600 13px Jua, sans-serif';
+  ctx.fillText('여기를 긁어 주세요', r.width/2, r.height/2 + 16);
+}
+
+function pos(e){
+  const r = canvas.getBoundingClientRect();
+  const p = e.touches ? e.touches[0] : e;
+  return { x:p.clientX - r.left, y:p.clientY - r.top };
+}
+function scratch(e){
+  if(cleared) return;
+  const {x,y} = pos(e);
+  ctx.globalCompositeOperation = 'destination-out';
+  ctx.beginPath(); ctx.arc(x,y,22,0,Math.PI*2); ctx.fill();
+  hint.classList.add('gone');
+}
+function ratio(){
+  const r = canvas.getBoundingClientRect();
+  const w = Math.max(1,Math.floor(r.width)), h = Math.max(1,Math.floor(r.height));
+  let img;
+  try{ img = ctx.getImageData(0,0,canvas.width,canvas.height).data; }catch(e){ return 0; }
+  let clear = 0; const step = 16; // 알파 샘플링
+  for(let i=3;i<img.length;i+=4*step){ if(img[i] === 0) clear++; }
+  return clear / (img.length/(4*step));
+}
+function maybeReveal(){
+  if(cleared) return;
+  if(ratio() > 0.5){ cleared = true; canvas.classList.add('cleared'); burst(); }
+}
+
+function start(e){ drawing = true; scratch(e); }
+function move(e){ if(drawing){ e.preventDefault(); scratch(e); } }
+function end(){ if(drawing){ drawing = false; maybeReveal(); } }
+
+canvas.addEventListener('mousedown', start);
+canvas.addEventListener('mousemove', move);
+window.addEventListener('mouseup', end);
+canvas.addEventListener('touchstart', e=>{ e.preventDefault(); start(e); }, {passive:false});
+canvas.addEventListener('touchmove',  move, {passive:false});
+canvas.addEventListener('touchend',   end);
+
+document.getElementById('reset').addEventListener('click', ()=>{
+  cleared = false; drawing = false;
+  canvas.classList.remove('cleared'); hint.classList.remove('gone');
+  paintFoil();
+});
+
+window.addEventListener('resize', ()=>{ if(!cleared) paintFoil(); });
+// 폰트 로드 후 다시 그려 글자 깨짐 방지
+if(document.fonts && document.fonts.ready){ document.fonts.ready.then(paintFoil); }
+paintFoil();
+
+/* ---------- 꽃가루 ---------- */
+const cc = document.getElementById('confetti');
+const cx = cc.getContext('2d');
+let parts = [], raf = null;
+function sizeC(){ cc.width = innerWidth; cc.height = innerHeight; }
+sizeC(); window.addEventListener('resize', sizeC);
+function burst(){
+  const colors = ['#c4373b','#e3c884','#c8a24c','#fff','#9e2528','#f3b6b8'];
+  parts = [];
+  for(let i=0;i<160;i++){
+    parts.push({
+      x: innerWidth/2 + (Math.random()-.5)*120,
+      y: innerHeight*0.35,
+      vx:(Math.random()-.5)*10, vy:Math.random()*-13-4,
+      g:0.32+Math.random()*0.15, s:6+Math.random()*7,
+      rot:Math.random()*6.28, vr:(Math.random()-.5)*0.4,
+      c:colors[(Math.random()*colors.length)|0], life:0
+    });
+  }
+  if(!raf) tick();
+}
+function tick(){
+  cx.clearRect(0,0,cc.width,cc.height);
+  let alive = false;
+  for(const p of parts){
+    p.life++; p.vy += p.g; p.x += p.vx; p.y += p.vy; p.rot += p.vr;
+    if(p.y < cc.height + 30) alive = true;
+    cx.save(); cx.translate(p.x,p.y); cx.rotate(p.rot);
+    cx.fillStyle = p.c; cx.fillRect(-p.s/2,-p.s/2,p.s,p.s*0.6);
+    cx.restore();
+  }
+  if(alive){ raf = requestAnimationFrame(tick); }
+  else { cx.clearRect(0,0,cc.width,cc.height); raf = null; }
+}
+</script>
+</body>
+</html>
