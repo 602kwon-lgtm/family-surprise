@@ -113,7 +113,7 @@
 </head>
 <body>
 <canvas id="confetti"></canvas>
-<a class="home" href="index.html">← 처음으로</a>
+<a class="home" href="/">← 처음으로</a>
 
 <div class="phone" id="phone">
   <div class="statusbar">
@@ -161,7 +161,7 @@
    ✏️  이 부분만 바꾸세요
    ============================================================ */
 const CONFIG = {
-  installLabel: "가족 구성원 +1 설치 중...",
+  installLabel: "인내심을 갖고 로딩을 기다려주세요",
 
   // 진행률(min)에 따라 바뀌는 설치 단계 문구
   steps: [
@@ -181,7 +181,7 @@ const CONFIG = {
   rsub:     "내년에 손주가 새 식구로 합류해요.<br>건강하게 잘 준비할게요 ☺️",
   dueDate:  "2027-02-01",             // 예: "2026-12-20" (비우면 D-day 안 나옴)
   ddayLabel:"출산 예정일까지",
-  sign:     "사랑하는 딸 · 사위 올림",
+  sign:     "602♥CBH 올림",
 };
 /* ============================================================ */
 
@@ -214,7 +214,7 @@ function complete(){
   pctEl.textContent = '100%'; pctEl.classList.add('check');
   fill.style.background = 'linear-gradient(90deg,#46d6a0,#5ee3b6)';
   stepEl.innerHTML = '<span class="check">설치 완료! 다시 시작이 필요합니다.</span>';
-  $('#installLbl').textContent = '가족 구성원 +1 설치 완료 ✓';
+  $('#installLbl').textContent = '설치 완료! 확인해 주세요 ✓';
   $('#note').textContent = '🎉 새로운 가족 구성원이 추가되었습니다.';
   $('#doneCta').classList.remove('hidden');
 }

@@ -150,7 +150,7 @@
 </head>
 <body>
   <canvas id="confetti"></canvas>
-  <a class="home" href="index.html">← 처음으로</a>
+  <a class="home" href="/">← 처음으로</a>
 
   <div class="ticket">
     <div class="head">
@@ -187,7 +187,7 @@ const CONFIG = {
   subMsg:   "우리 가족이<br>한 명 더 늘어납니다 👶",
   dueDate:  "2027-02-01",                // 예: "2026-12-20"  (비워두면 D-day 안 보임)
   ddayLabel:"출산 예정일까지",            // D-day 앞에 붙는 말
-  sign:     "사랑하는 아들 · 며느리 올림", // 보내는 사람
+  sign:     "602♥CBH 올림",               // 보내는 사람
   hint:     "👆 동전으로 긁어 보세요",
 };
 /* ============================================================ */
@@ -199,9 +199,8 @@ document.getElementById('subText').innerHTML     = CONFIG.subMsg;
 document.getElementById('signText').textContent  = CONFIG.sign;
 document.getElementById('hint').textContent       = CONFIG.hint;
 
-// 랜덤 일련번호 (재미 요소)
-const rnd = n => Math.floor(Math.random()*10**n).toString().padStart(n,'0');
-document.getElementById('serial').textContent = `NO. ${rnd(4)}-${rnd(4)}-${rnd(4)}`;
+// 일련번호 (예정일 2027-02-01 기념)
+document.getElementById('serial').textContent = `NO. 2027-0201`;
 
 // D-day 계산
 (function(){
@@ -252,12 +251,14 @@ function pos(e){
   const p = e.touches ? e.touches[0] : e;
   return { x:p.clientX - r.left, y:p.clientY - r.top };
 }
+let sinceCheck = 0;
 function scratch(e){
   if(cleared) return;
   const {x,y} = pos(e);
   ctx.globalCompositeOperation = 'destination-out';
   ctx.beginPath(); ctx.arc(x,y,22,0,Math.PI*2); ctx.fill();
   hint.classList.add('gone');
+  if(++sinceCheck % 5 === 0) maybeReveal();   // 긁는 도중에도 50% 넘으면 바로 공개
 }
 function ratio(){
   const r = canvas.getBoundingClientRect();
@@ -270,7 +271,7 @@ function ratio(){
 }
 function maybeReveal(){
   if(cleared) return;
-  if(ratio() > 0.5){ cleared = true; canvas.classList.add('cleared'); burst(); }
+  if(ratio() >= 0.5){ cleared = true; canvas.classList.add('cleared'); burst(); }
 }
 
 function start(e){ drawing = true; scratch(e); }
