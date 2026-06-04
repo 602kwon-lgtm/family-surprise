@@ -73,6 +73,9 @@
   .opt.wrong{ background:#fdecea; border-color:var(--coral-deep); }
   .opt.correct .key{ color:var(--teal); }
   .opt:disabled{ cursor:default; }
+  .opt .mark{ margin-left:auto; font-family:"Jua",sans-serif; font-size:16px; white-space:nowrap; }
+  .opt.wrong .mark{ color:var(--coral-deep); }
+  .opt.correct .mark{ color:var(--teal); }
 
   .next{
     margin-top:auto; font-family:"Jua",sans-serif; font-size:18px; color:#fff;
@@ -211,8 +214,11 @@ function choose(i, item, isReveal, btn){
   const buttons = [...document.querySelectorAll('.opt')];
   buttons.forEach(b=>b.disabled = true);
   if(isReveal){ setTimeout(showReveal, 380); buttons[item.answer].classList.add('correct'); return; }
-  if(i === item.answer){ score++; btn.classList.add('correct'); }
-  else { btn.classList.add('wrong'); buttons[item.answer].classList.add('correct'); }
+  if(i === item.answer){ score++; btn.classList.add('correct'); btn.insertAdjacentHTML('beforeend','<span class="mark">딩동댕! ✓</span>'); }
+  else {
+    btn.classList.add('wrong'); btn.insertAdjacentHTML('beforeend','<span class="mark">땡! ✗</span>');
+    buttons[item.answer].classList.add('correct');
+  }
   $('#nextBtn').classList.remove('hidden');
 }
 

@@ -271,7 +271,7 @@ function ratio(){
 }
 function maybeReveal(){
   if(cleared) return;
-  if(ratio() >= 0.5){ cleared = true; canvas.classList.add('cleared'); burst(); }
+  if(ratio() >= 0.4){ cleared = true; canvas.classList.add('cleared'); burst(); }   // 절반쯤 긁으면 전체가 싹 벗겨짐
 }
 
 function start(e){ drawing = true; scratch(e); }
